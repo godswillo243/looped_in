@@ -1,9 +1,14 @@
-import InputField from "@/components/input-field";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+import InputField from "@/components/input-field";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import axiosInstance from "@/lib/axiosInstance";
 
 interface SignInFormValues {
   email: string;
@@ -11,22 +16,47 @@ interface SignInFormValues {
 }
 
 function SignIn() {
+  const defaultValues: SignInFormValues = useMemo(
+    () => ({
+      email: "",
+      password: "",
+    }),
+    []
+  );
   const {
     register,
     handleSubmit,
-
     formState: { errors },
   } = useForm<SignInFormValues>({
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+    defaultValues,
     mode: "onBlur",
+  });
+
+  const [serverError, setServerError] = useState<string>("");
+
+  const queryClient = useQueryClient();
+  const { mutate: signUp, status } = useMutation<
+    string,
+    AxiosError<Record<string, string>, SignInFormValues>,
+    SignInFormValues,
+    unknown
+  >({
+    mutationFn: async (data) => {
+      const res = await axiosInstance.post("/auth/sign-in", data);
+      return res.data;
+    },
   });
 
   const onSubmit = async (data: SignInFormValues) => {
     try {
-      console.log(data);
+      signUp(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["user"] });
+        },
+        onError: (err) => {
+          setServerError(err.response?.data.message || "");
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -35,10 +65,10 @@ function SignIn() {
   return (
     <div className="w-full flex items-center justify-center">
       <form
-        className={cn("flex flex-col gap-6 w-full max-w-sm")}
+        className={cn("flex flex-col gap-4 w-full max-w-sm p-8")}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <FieldGroup>
+        <FieldGroup className="gap-4">
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-2xl font-bold">Login to your account</h1>
             <p className="text-muted-foreground text-sm text-balance">
@@ -75,8 +105,29 @@ function SignIn() {
             type="password"
           />
           <Field>
-            <Button type="submit">Login</Button>
+            <FieldDescription className="text-right">
+              <Link
+                to="/reset-password"
+                className="underline underline-offset-4"
+              >
+                Forgot password
+              </Link>
+            </FieldDescription>
           </Field>
+          <Field>
+            <Button
+              type="submit"
+              className="font-semibold"
+              disabled={status === "pending"}
+            >
+              {status === "pending" ? <Spinner /> : "Sign in"}
+            </Button>
+          </Field>
+          {serverError && (
+            <p className="text-destructive text-sm text-center">
+              {serverError}
+            </p>
+          )}
           <Field>
             <FieldDescription className="text-center">
               Don&apos;t have an account?{" "}

@@ -1,6 +1,7 @@
-import { IncomingMessage, ServerResponse } from "http";
+import { Router } from "express";
 
-export const handleUserRoutes = (
-  req: IncomingMessage,
-  res: ServerResponse
-) => {};
+const usersRouter = Router();
+
+// usersRouter.put("/", )
+
+export default usersRouter;

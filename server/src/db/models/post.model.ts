@@ -1,3 +1,4 @@
+import { IPost } from "models";
 import { model, Schema } from "mongoose";
 
 const postSchema = new Schema<IPost>(

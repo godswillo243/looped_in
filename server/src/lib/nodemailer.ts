@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     pass: SMTP_PASS,
   },
   tls: {
-    rejectUnauthorized: true,
+    rejectUnauthorized: false,
   },
 });
 

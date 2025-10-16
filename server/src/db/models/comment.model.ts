@@ -1,3 +1,4 @@
+import { IComment } from "models";
 import { model, Schema } from "mongoose";
 
 const commentSchema = new Schema<IComment>(

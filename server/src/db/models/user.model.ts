@@ -1,3 +1,4 @@
+import { IUser } from "models";
 import { model, Schema } from "mongoose";
 
 const userSchema = new Schema<IUser>(
@@ -46,7 +47,7 @@ const userSchema = new Schema<IUser>(
         endYear: Number,
       },
     ],
-    resumeUrls: [toString],
+    resumeUrls: [String],
     emailVerification: {
       code: String,
       expiresAt: Date,
@@ -55,7 +56,7 @@ const userSchema = new Schema<IUser>(
         default: false,
       },
     },
-    resetPasswordToken: String,
+    resetPasswordCode: String,
   },
   { timestamps: true }
 );

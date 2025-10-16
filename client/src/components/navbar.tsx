@@ -9,6 +9,7 @@ import {
 import { Button } from "./ui/button";
 import Icon from "./icon";
 import { ICON_PATHS } from "@/lib/icons";
+import SignOutBtn from "./sign-out-btn";
 
 function Navbar() {
   const user = {
@@ -17,7 +18,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="flex w-[98%] items-center justify-between absolute top-0 z-10 px-4 py-2 gap-6">
+    <nav className="flex w-[98%] items-center justify-between absolute top-0 z-10 p-2 py-2 gap-4">
       <Link to={"/"} className="mr-auto">
         <p className="text-primary font-bold text-2xl flex items-center">
           Looped
@@ -31,10 +32,17 @@ function Navbar() {
       </div>
       <Link
         to={"/search"}
+        className="flex items-center justify-center gap-1 p-1.5 px-2 bg-accent/50 rounded-full"
+      >
+        <Icon paths={ICON_PATHS.plus} className="size-6 shrink-0" />
+        <p className="text-sm">Create</p>
+      </Link>
+      <Link
+        to={"/search"}
         className="flex items-center justify-center gap-1 p-2 bg-accent/50 rounded-full"
       >
         <Icon paths={ICON_PATHS.search} className="size-4" />
-        <p className="text-xs">Search</p>
+        <p className="text-sm">Search</p>
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">
@@ -58,7 +66,7 @@ function Navbar() {
             </Avatar>
             <p>{user.name}</p>
           </Link>
-          <Button variant={"outline"}>Sign Out</Button>
+          <SignOutBtn />
         </DropdownMenuContent>
       </DropdownMenu>
     </nav>

@@ -1,7 +1,7 @@
 import mongoose, { Document } from "mongoose";
 
-declare global {
-  interface IUser extends Document {
+declare module "models" {
+  export interface IUser extends Document {
     uid: string;
     email: string;
     passwordHash: string;
@@ -20,15 +20,15 @@ declare global {
     }[];
     resumeUrls: string[];
     emailVerification: { code: string; expiresAt: Date; done: boolean };
-    resetPasswordToken: string;
+    resetPasswordCode: string;
   }
 
-  interface IConnection extends Document {
+  export interface IConnection extends Document {
     user: mongoose.Schema.Types.ObjectId;
     targetUser: mongoose.Schema.Types.ObjectId;
     status: "pending" | "accepted" | "blocked";
   }
-  interface INotification extends Document {
+  export interface INotification extends Document {
     user: mongoose.Schema.Types.ObjectId;
     entityId: mongoose.Schema.Types.ObjectId;
     entityType: "comment" | "like" | "job" | "job-application" | "connection";
@@ -36,7 +36,7 @@ declare global {
     status: "unread" | "read";
   }
 
-  interface IPost extends Document {
+  export interface IPost extends Document {
     user: mongoose.Schema.Types.ObjectId;
     content: string;
     imageUrls: string[];
@@ -44,13 +44,13 @@ declare global {
     likes: mongoose.Schema.Types.ObjectId[];
     reposts: mongoose.Schema.Types.ObjectId[];
   }
-  interface IComment extends Document {
+  export interface IComment extends Document {
     post: mongoose.Schema.Types.ObjectId;
     user: mongoose.Schema.Types.ObjectId;
     parentComment: mongoose.Schema.Types.ObjectId | null;
     content: string;
   }
-  interface IJob extends Document {
+  export interface IJob extends Document {
     uploadedBy: mongoose.Schema.Types.ObjectId;
     companyName: string;
     companyLogoUrl: string;
@@ -60,7 +60,7 @@ declare global {
     skillsRequired: string[];
     deadline: Date;
   }
-  interface IJobApplication extends Document {
+  export interface IJobApplication extends Document {
     user: mongoose.Schema.Types.ObjectId;
     job: mongoose.Schema.Types.ObjectId;
     resumeUrl: string;

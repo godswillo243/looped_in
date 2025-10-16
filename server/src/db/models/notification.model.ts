@@ -1,3 +1,4 @@
+import { INotification } from "models";
 import { model, Schema } from "mongoose";
 
 const notificationSchema = new Schema<INotification>(

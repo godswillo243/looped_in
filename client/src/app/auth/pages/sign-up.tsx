@@ -1,10 +1,14 @@
-import InputField from "@/components/input-field";
-import { Button } from "@/components/ui/button";
-import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
-
-import { cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
+import { Field, FieldDescription, FieldGroup } from "@/components/ui/field";
+import InputField from "@/components/input-field";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+import axiosInstance from "@/lib/axiosInstance";
 
 interface SignUpFormValues {
   firstName: string;
@@ -14,23 +18,48 @@ interface SignUpFormValues {
 }
 
 function SignUp() {
+  const defaultValues: SignUpFormValues = useMemo(
+    () => ({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    }),
+    []
+  );
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<SignUpFormValues>({
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-    },
+    defaultValues,
     mode: "onBlur",
+  });
+  const [serverError, setServerError] = useState<string>("");
+
+  const queryClient = useQueryClient();
+  const { mutate: signUp, status } = useMutation<
+    string,
+    AxiosError<Record<string, string>, SignUpFormValues>,
+    SignUpFormValues,
+    unknown
+  >({
+    mutationFn: async (data) => {
+      const res = await axiosInstance.post("/auth/sign-up", data);
+      return res.data;
+    },
   });
 
   const onSubmit = async (data: SignUpFormValues) => {
     try {
-      console.log(data);
+      signUp(data, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["user"] });
+        },
+        onError: (err) => {
+          setServerError(err.response?.data.message || "");
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -39,10 +68,10 @@ function SignUp() {
   return (
     <div className="w-full flex items-center justify-center">
       <form
-        className={cn("flex flex-col gap-6 w-full max-w-sm")}
+        className={cn("flex flex-col gap-4 w-full max-w-sm p-8")}
         onSubmit={handleSubmit(onSubmit)}
       >
-        <FieldGroup>
+        <FieldGroup className="gap-4">
           <div className="flex flex-col items-center gap-1 text-center">
             <h1 className="text-2xl font-bold">Create an account</h1>
             <p className="text-muted-foreground text-sm text-balance"></p>
@@ -112,12 +141,23 @@ function SignUp() {
               },
             }}
             type="password"
+            isPassword
           />
+
           <Field>
-            <Button type="submit" className="font-semibold">
-              Create account
+            <Button
+              type="submit"
+              className="font-semibold"
+              disabled={status === "pending"}
+            >
+              {status === "pending" ? <Spinner /> : "Create account"}
             </Button>
           </Field>
+          {serverError && (
+            <p className="text-destructive text-sm text-center">
+              {serverError}
+            </p>
+          )}
           <Field>
             <FieldDescription className="text-center">
               Already have an account?{" "}

@@ -1,3 +1,4 @@
+import { IJob } from "models";
 import { model, Schema } from "mongoose";
 
 const jobSchema = new Schema<IJob>(
