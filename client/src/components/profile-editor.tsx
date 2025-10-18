@@ -22,6 +22,8 @@ import { Spinner } from "./ui/spinner";
 
 interface Props {
   onSave: () => void;
+  isOpen?: boolean;
+  setIsOpen?: (isOpen: boolean) => void;
 }
 
 interface FormData {
@@ -33,7 +35,7 @@ interface FormData {
   profilePicture: string;
 }
 
-function ProfileEditor({ onSave }: Props) {
+function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData(["user"]) as IUser;
   const [formData, setFormData] = useState({
@@ -62,14 +64,14 @@ function ProfileEditor({ onSave }: Props) {
 
     editProfile(formData, {
       onSuccess: () => {
-        toast.success("Profile updated");
+        toast.success("Profile");
         onSave();
       },
     });
   };
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={setIsOpen} open={isOpen}>
       <DialogTrigger asChild>
         <Button variant="outline">Edit profile</Button>
       </DialogTrigger>

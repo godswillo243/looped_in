@@ -1,22 +1,15 @@
 import { Handler } from "express";
 import UserModel from "../db/models/user.model";
 import { createError } from "../lib/utils";
+import { uploadImage } from "../lib/cloudinary";
 
 export const editProfile: Handler = async (req, res, next) => {
   try {
     const user = await UserModel.findById((req as any).userId);
     if (!user) throw createError(404, "User not found!");
 
-    const {
-      firstName,
-      lastName,
-      location,
-      headline,
-      about,
-      profilePicture,
-      education,
-      exprience,
-    } = req.body;
+    const { firstName, lastName, location, headline, about, profilePicture } =
+      req.body;
 
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
@@ -25,7 +18,11 @@ export const editProfile: Handler = async (req, res, next) => {
     user.about = about || user.about;
 
     if (profilePicture) {
-      //- TODO:  Upload to cloudinary
+      try {
+        user.profilePictureUrl = await uploadImage(profilePicture);
+      } catch (error) {
+        throw createError(500, "Error uploading image");
+      }
     }
 
     await user.save();

@@ -1,5 +1,6 @@
 import Icon from "@/components/icon";
 import ProfileEditor from "@/components/profile-editor";
+import ProfileImageEditor from "@/components/profile-image-editor";
 import SignOutBtn from "@/components/sign-out-btn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -12,23 +13,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import axiosInstance from "@/lib/axiosInstance";
 import { ICON_PATHS } from "@/lib/icons";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { IUser } from "@types";
 import type { AxiosError } from "axios";
-import { CameraIcon } from "lucide-react";
+
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 function Profile() {
   const queryClient = useQueryClient();
   const authUser = queryClient.getQueryData(["user"]) as IUser;
   const uid = useParams().uid;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  // const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const isMyProfile = authUser?.uid === uid;
   const fullname = `${authUser?.firstName} ${authUser?.lastName}`;
 
-  const { data } = useQuery<IUser, AxiosError, IUser, string[]>({
+  const { data, isPending } = useQuery<IUser, AxiosError, IUser, string[]>({
     queryKey: [uid as string],
     enabled: !isMyProfile,
     queryFn: async () => {
@@ -39,6 +44,17 @@ function Profile() {
 
   const user = isMyProfile ? authUser : data;
 
+  useEffect(() => {
+    const el = fileInputRef.current;
+    if (!el) return;
+  }, [fileInputRef, queryClient, user]);
+
+  if (isPending && !isMyProfile)
+    return (
+      <article className="w-full h-full flex items-center justify-center">
+        <Spinner className="size-10" />
+      </article>
+    );
   if (!user)
     return (
       <article className="w-full h-full overflow-auto">
@@ -60,16 +76,14 @@ function Profile() {
                 <AvatarImage
                   src={user?.profilePictureUrl}
                   onClick={() => console.log("clicked")}
+                  className="object-cover"
                 />
                 <AvatarFallback className="text-6xl text-center">
                   {fullname[0]}
                 </AvatarFallback>
               </Avatar>
-              {isMyProfile && (
-                <Button variant={"ghost"} className="absolute right-0 bottom-0">
-                  <CameraIcon className="size-6" />
-                </Button>
-              )}
+              {isMyProfile && <ProfileImageEditor onSave={handleSave} />}
+              <input type="file" hidden ref={fileInputRef} />
             </div>
             <div>
               <CardTitle className="text-2xl">{fullname}</CardTitle>
