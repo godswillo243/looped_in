@@ -5,7 +5,6 @@ import type { IUser } from "@types";
 import type { AxiosError } from "axios";
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
-import { toast } from "sonner";
 
 import { lazy, Suspense } from "react";
 
@@ -49,8 +48,7 @@ function App() {
       return;
     }
     if (userStatus === "success" && userData) setUser(userData);
-  }, [userStatus, userData]);
-  cookieStore.getAll().then((cookies) => console.log(cookies));
+  }, [userStatus, userData, setUser]);
   return (
     <Suspense fallback="Loading...">
       <Routes>

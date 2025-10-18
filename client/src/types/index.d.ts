@@ -1,10 +1,11 @@
 declare module "@types" {
-  interface IUser {
+  export interface IUser {
     uid: string;
     email: string;
     passwordHash: string;
     firstName: string;
     lastName: string;
+    profilePictureUrl: string;
     headline: string;
     location: string;
     about: string;
@@ -16,9 +17,15 @@ declare module "@types" {
       startYear: number;
       endYear: number;
     }[];
+    exprience: {
+      company: string;
+      position: string;
+      startYear: number;
+      endYear: number;
+    }[];
     resumeUrls: string[];
-    emailVerification: { code: string; expiresAt: Date; done: boolean };
-    resetPasswordToken: string;
+    emailVerification: { code: string; done: boolean };
+    resetPasswordCode: string;
   }
 
   interface IConnection {

@@ -26,18 +26,11 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
-    headline: {
-      type: String,
-    },
-    location: {
-      type: String,
-    },
-    about: {
-      type: String,
-    },
-    skills: {
-      type: [String],
-    },
+    profilePictureUrl: String,
+    headline: String,
+    location: String,
+    about: String,
+    skills: [String],
     education: [
       {
         school: String,
@@ -47,10 +40,17 @@ const userSchema = new Schema<IUser>(
         endYear: Number,
       },
     ],
+    exprience: [
+      {
+        company: String,
+        position: String,
+        startYear: Number,
+        endYear: Number,
+      },
+    ],
     resumeUrls: [String],
     emailVerification: {
       code: String,
-      expiresAt: Date,
       done: {
         type: Boolean,
         default: false,

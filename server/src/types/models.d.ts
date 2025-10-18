@@ -7,6 +7,7 @@ declare module "models" {
     passwordHash: string;
     firstName: string;
     lastName: string;
+    profilePictureUrl: string;
     headline: string;
     location: string;
     about: string;
@@ -18,9 +19,16 @@ declare module "models" {
       startYear: number;
       endYear: number;
     }[];
+    exprience: {
+      company: string;
+      position: string;
+      startYear: number;
+      endYear: number;
+    }[];
     resumeUrls: string[];
-    emailVerification: { code: string; expiresAt: Date; done: boolean };
+    emailVerification: { code: string; done: boolean };
     resetPasswordCode: string;
+    createdAt: Date;
   }
 
   export interface IConnection extends Document {
@@ -65,5 +73,11 @@ declare module "models" {
     job: mongoose.Schema.Types.ObjectId;
     resumeUrl: string;
     status: "pending" | "accepted" | "rejected";
+  }
+
+  export interface IMessage extends Document {
+    sender: mongoose.Schema.Types.ObjectId;
+    receiver: mongoose.Schema.Types.ObjectId;
+    content: string;
   }
 }

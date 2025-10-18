@@ -126,3 +126,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+* ::-webkit-scrollbar {
+  background-color: var(--background);
+  width: 8px;
+}
+* ::-webkit-scrollbar-thumb {
+  background-color: var(--foreground);
+  border-radius: 10px;
+}

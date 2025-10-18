@@ -15,8 +15,10 @@ import { Spinner } from "@/components/ui/spinner";
 import useCountDown from "@/hooks/useCountDown";
 import axiosInstance from "@/lib/axiosInstance";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { IUser } from "@types";
 import type { AxiosError } from "axios";
 import { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 
 function EmailVerification() {
   const COUNT_KEY = "verification-countdown";
@@ -24,6 +26,8 @@ function EmailVerification() {
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const user = queryClient.getQueryData(["user"]) as IUser;
 
   const { mutate: verifyEmail, isPending: isVerifyPending } = useMutation<
     string,
@@ -51,6 +55,7 @@ function EmailVerification() {
     verifyEmail(otp, {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["user"] });
+        navigate("/");
       },
       onError: (e) => {
         console.log(e);
@@ -68,6 +73,8 @@ function EmailVerification() {
       },
     });
   };
+
+  if (user.emailVerification.done) return <Navigate to="/" />;
 
   return (
     <main className=" w-screen h-dvh flex flex-col items-center ">

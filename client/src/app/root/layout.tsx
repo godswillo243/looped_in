@@ -22,9 +22,9 @@ function Layout() {
       <div className="max-md:hidden "></div>
       <div
         className={cn(
-          "fixed bottom-0 w-full",
+          "sticky bottom-0 w-full",
           "flex items-center justify-center",
-          "md:hidden pb-2 bg-background"
+          "md:hidden py-2 bg-background"
         )}
       >
         <Navlist />

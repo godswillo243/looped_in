@@ -6,16 +6,15 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
 import Icon from "./icon";
 import { ICON_PATHS } from "@/lib/icons";
 import SignOutBtn from "./sign-out-btn";
+import { useAuthStore } from "@/store/auth-store";
 
 function Navbar() {
-  const user = {
-    id: "001",
-    name: "Godswill Ogbodu",
-  };
+  const user = useAuthStore((state) => state.user!);
+
+  const fullName = `${user?.firstName} ${user?.lastName}`;
 
   return (
     <nav className="flex w-[98%] items-center justify-between absolute top-0 z-10 p-2 py-2 gap-4">
@@ -31,7 +30,7 @@ function Navbar() {
         <Navlist />
       </div>
       <Link
-        to={"/search"}
+        to={"/create"}
         className="flex items-center justify-center gap-1 p-1.5 px-2 bg-accent/50 rounded-full"
       >
         <Icon paths={ICON_PATHS.plus} className="size-6 shrink-0" />
@@ -47,24 +46,24 @@ function Navbar() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">
           <Avatar className="size-8">
-            <AvatarImage src="" alt="profile" />
+            <AvatarImage src={user?.profilePictureUrl} alt="profile" />
             <AvatarFallback className="font-black text-xl">
-              {user.name[0]}
+              {fullName[0]}
             </AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="flex flex-col gap-2 p-4">
           <Link
-            to={`/in/${user.id}`}
+            to={`/in/${user.uid}`}
             className="flex gap-2 hover:bg-accent/50 p-2 px-4 rounded-md "
           >
             <Avatar className="size-6">
               <AvatarImage src="" alt="profile" />
               <AvatarFallback className="font-black text-xl">
-                {user.name[0]}
+                {fullName[0]}
               </AvatarFallback>
             </Avatar>
-            <p>{user.name}</p>
+            <p>{fullName}</p>
           </Link>
           <SignOutBtn />
         </DropdownMenuContent>
