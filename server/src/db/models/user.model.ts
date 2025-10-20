@@ -26,6 +26,10 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
     },
+    connectionCount: {
+      type: Number,
+      default: 0,
+    },
     profilePictureUrl: String,
     headline: String,
     location: String,

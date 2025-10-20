@@ -19,6 +19,8 @@ import axiosInstance from "@/lib/axiosInstance";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Spinner } from "./ui/spinner";
+import { XIcon } from "lucide-react";
+import { Badge } from "./ui/badge";
 
 interface Props {
   onSave: () => void;
@@ -32,20 +34,29 @@ interface FormData {
   location: string;
   headline: string;
   about: string;
-  profilePicture: string;
+  skills: string[];
 }
 
 function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
   const queryClient = useQueryClient();
   const user = queryClient.getQueryData(["user"]) as IUser;
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: user.firstName || "",
     lastName: user.lastName || "",
     location: user.location || "",
     headline: user.headline || "",
     about: user.about || "",
-    profilePicture: user.profilePictureUrl || "",
+    skills: user.skills || [],
   });
+
+  const [skill, setSkill] = useState("");
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
   const { mutate: editProfile, isPending } = useMutation<
     string,
     AxiosError,
@@ -64,7 +75,7 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
 
     editProfile(formData, {
       onSuccess: () => {
-        toast.success("Profile");
+        toast.success("Profile updated!");
         onSave();
       },
     });
@@ -75,7 +86,7 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
       <DialogTrigger asChild>
         <Button variant="outline">Edit profile</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] max-h-dvh overflow-auto">
+      <DialogContent className="max-w-[425px] w-full  max-h-dvh overflow-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
@@ -92,12 +103,7 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
                 name="firstName"
                 type="text"
                 value={formData.firstName}
-                onChange={(e) =>
-                  setFormData((state) => ({
-                    ...state,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
+                onChange={handleChange}
               />
             </Field>
             <Field className="">
@@ -107,12 +113,7 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
                 name="lastName"
                 type="text"
                 value={formData.lastName}
-                onChange={(e) =>
-                  setFormData((state) => ({
-                    ...state,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
+                onChange={handleChange}
               />
             </Field>
             <Field className="">
@@ -122,12 +123,7 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
                 name="location"
                 type="text"
                 value={formData.location}
-                onChange={(e) =>
-                  setFormData((state) => ({
-                    ...state,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
+                onChange={handleChange}
               />
             </Field>
             <Field className="">
@@ -137,12 +133,7 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
                 name="headline"
                 type="text"
                 value={formData.headline}
-                onChange={(e) =>
-                  setFormData((state) => ({
-                    ...state,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
+                onChange={handleChange}
               />
             </Field>
             <Field className="">
@@ -151,16 +142,59 @@ function ProfileEditor({ onSave, isOpen, setIsOpen }: Props) {
                 id="about"
                 name="about"
                 value={formData.about}
-                onChange={(e) =>
-                  setFormData((state) => ({
-                    ...state,
-                    [e.target.name]: e.target.value,
-                  }))
-                }
+                onChange={handleChange}
               />
             </Field>
+            <Field className="">
+              <FieldLabel htmlFor="about">Skills</FieldLabel>
+              <span className="flex items-center gap-2">
+                <Input
+                  id="skills"
+                  name="skills"
+                  value={skill}
+                  onChange={(e) => setSkill(e.target.value)}
+                />
+                <Button
+                  variant={"outline"}
+                  type="button"
+                  className="w-fit!"
+                  onClick={() => {
+                    setFormData((state) => {
+                      if (state.skills.includes(skill)) return state;
+                      state.skills.push(skill);
+                      return state;
+                    });
+                    setSkill("");
+                  }}
+                >
+                  Add
+                </Button>
+              </span>
+              <ul className="flex items-center justify-center flex-wrap">
+                {formData.skills.map((skill) => (
+                  <Badge
+                    className="rounded-full"
+                    key={skill}
+                    variant={"secondary"}
+                  >
+                    <span className="text-base ">{skill}</span>
+                    <span
+                      className=""
+                      onClick={() => {
+                        setFormData((state) => ({
+                          ...state,
+                          skills: state.skills.filter((s) => s !== skill),
+                        }));
+                      }}
+                    >
+                      <XIcon />
+                    </span>
+                  </Badge>
+                ))}
+              </ul>
+            </Field>
           </FieldGroup>
-          <DialogFooter>
+          <DialogFooter className="mt-6">
             <DialogClose asChild>
               <Button variant="outline" disabled={isPending}>
                 Cancel

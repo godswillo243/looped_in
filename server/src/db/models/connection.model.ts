@@ -3,12 +3,12 @@ import { model, Schema } from "mongoose";
 
 const connectionSchema = new Schema<IConnection>(
   {
-    user: {
+    sender: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    targetUser: {
+    receiver: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,

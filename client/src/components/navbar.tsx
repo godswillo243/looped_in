@@ -9,17 +9,22 @@ import {
 import Icon from "./icon";
 import { ICON_PATHS } from "@/lib/icons";
 import SignOutBtn from "./sign-out-btn";
-import { useAuthStore } from "@/store/auth-store";
+
+import { useQueryClient } from "@tanstack/react-query";
+import type { IUser } from "@types";
 
 function Navbar() {
-  const user = useAuthStore((state) => state.user!);
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData<unknown, string[], IUser>(["user"]);
+
+  if (!user) return <>navbar</>;
 
   const fullName = `${user?.firstName} ${user?.lastName}`;
 
   return (
-    <nav className="flex w-[98%] items-center justify-between absolute top-0 z-10 p-2 py-2 gap-4">
+    <nav className="flex w-full items-center justify-between fixed bg-transparent backdrop-blur-xl top-0 z-10 p-2 py-2 gap-4">
       <Link to={"/"} className="mr-auto">
-        <p className="text-primary font-bold text-2xl flex items-center">
+        <p className="text-primary font-bold text-2xl flex items-center font-inder">
           Looped
           <span className="bg-primary text-secondary rounded-xs text-center size-8">
             in
@@ -34,14 +39,14 @@ function Navbar() {
         className="flex items-center justify-center gap-1 p-1.5 px-2 bg-accent/50 rounded-full"
       >
         <Icon paths={ICON_PATHS.plus} className="size-6 shrink-0" />
-        <p className="text-sm">Create</p>
+        <p className="text-sm max-sm:hidden">Create</p>
       </Link>
       <Link
         to={"/search"}
         className="flex items-center justify-center gap-1 p-2 bg-accent/50 rounded-full"
       >
         <Icon paths={ICON_PATHS.search} className="size-4" />
-        <p className="text-sm">Search</p>
+        <p className="text-sm max-sm:hidden">Search</p>
       </Link>
       <DropdownMenu>
         <DropdownMenuTrigger asChild className="cursor-pointer">

@@ -28,12 +28,13 @@ declare module "models" {
     resumeUrls: string[];
     emailVerification: { code: string; done: boolean };
     resetPasswordCode: string;
+    connectionCount: number;
     createdAt: Date;
   }
 
   export interface IConnection extends Document {
-    user: mongoose.Schema.Types.ObjectId;
-    targetUser: mongoose.Schema.Types.ObjectId;
+    sender: mongoose.Schema.Types.ObjectId;
+    receiver: mongoose.Schema.Types.ObjectId;
     status: "pending" | "accepted" | "blocked";
   }
   export interface INotification extends Document {

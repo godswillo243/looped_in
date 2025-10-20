@@ -3,6 +3,7 @@ import ProfileEditor from "@/components/profile-editor";
 import ProfileImageEditor from "@/components/profile-image-editor";
 import SignOutBtn from "@/components/sign-out-btn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -67,7 +68,7 @@ function Profile() {
   };
 
   return (
-    <article className="w-full h-full overflow-auto">
+    <article className="w-full h-full ">
       <div className="p-2 space-y-4">
         <Card>
           <CardHeader>
@@ -87,23 +88,37 @@ function Profile() {
             </div>
             <div>
               <CardTitle className="text-2xl">{fullname}</CardTitle>
-              <p className="text-foreground/65 ">{user.email}</p>
-              <p className="text-foreground/65 ">
+              <CardDescription className="text-foreground/65 ">
+                {user.email}
+              </CardDescription>
+              <CardDescription className="text-foreground/65 ">
                 <span className="text-foreground">UID: </span>
                 {user.uid}
-              </p>
+              </CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <CardDescription>
               <span className="font-medium! text-foreground">Location: </span>
-              {user.location || "Rivers State, Nigeria"}
+              {user.location || <span className="italic">No location</span>}
             </CardDescription>
             <CardDescription>
               <span className="font-medium! text-foreground">Headline: </span>
               <br />
-              {user.headline || "Headline"}
+              {user.headline || <span className="italic">No headline</span>}
             </CardDescription>
+            <div>
+              <span className="font-medium! text-sm text-foreground">
+                Skills:{" "}
+              </span>
+              <ul className="flex items-center gap-2">
+                {user.skills.map((skill) => (
+                  <li key={skill}>
+                    <Badge variant={"secondary"}>{skill}</Badge>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </CardContent>
           <CardFooter className="flex items-center gap-2">
             {isMyProfile ? (

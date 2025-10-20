@@ -7,8 +7,8 @@ export const NAV_ITEMS = [
     iconPaths: ICON_PATHS.home,
   },
   {
-    label: "network",
-    href: "/network",
+    label: "people",
+    href: "/people",
     iconPaths: ICON_PATHS.people,
   },
   {

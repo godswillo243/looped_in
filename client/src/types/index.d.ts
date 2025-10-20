@@ -29,8 +29,8 @@ declare module "@types" {
   }
 
   interface IConnection {
-    user: string | IUser;
-    targetUser: string | IUser;
+    sender: string | IUser;
+    receiver: string | IUser;
     status: "pending" | "accepted" | "blocked";
   }
   interface INotification {

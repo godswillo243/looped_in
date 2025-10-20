@@ -1,22 +1,32 @@
 import { Handler } from "express";
 import UserModel from "../db/models/user.model";
 import { createError } from "../lib/utils";
-import { uploadImage } from "../lib/cloudinary";
+import { deleteImageByUrl, uploadImage } from "../lib/cloudinary";
+import ConnectionModel from "../db/models/connection.model";
 
 export const editProfile: Handler = async (req, res, next) => {
   try {
     const user = await UserModel.findById((req as any).userId);
     if (!user) throw createError(404, "User not found!");
 
-    const { firstName, lastName, location, headline, about, profilePicture } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      location,
+      headline,
+      about,
+      profilePicture,
+      skills,
+    } = req.body;
 
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
     user.location = location || user.location;
     user.headline = headline || user.headline;
+    user.skills = skills || user.skills;
     user.about = about || user.about;
 
+    const prevprofilePictureUrl = user.profilePictureUrl;
     if (profilePicture) {
       try {
         user.profilePictureUrl = await uploadImage(profilePicture);
@@ -27,6 +37,13 @@ export const editProfile: Handler = async (req, res, next) => {
 
     await user.save();
 
+    if (
+      prevprofilePictureUrl &&
+      prevprofilePictureUrl !== user.profilePictureUrl
+    ) {
+      const a = await deleteImageByUrl(prevprofilePictureUrl);
+      console.log(a);
+    }
     res.status(200).json("Updated!");
   } catch (e) {
     next(e);
@@ -54,6 +71,21 @@ export const getUser: Handler = async (req, res, next) => {
       profilePictureUrl: user.profilePictureUrl,
     };
     res.status(200).json(data);
+  } catch (e) {
+    next(e);
+  }
+};
+export const getUserConnections: Handler = async (req, res, next) => {
+  try {
+    const user = await UserModel.findOne({ uid: req.params.uid });
+    if (!user) throw createError(404, "User not found!");
+
+    const connections = await ConnectionModel.find({
+      $or: [{ sender: user._id }, { receiver: user._id }],
+    })
+      .populate("sender", "firstName lastName profilePictureUrl uid")
+      .populate("receiver", "firstName lastName profilePictureUrl uid");
+    res.status(200).json(connections);
   } catch (e) {
     next(e);
   }

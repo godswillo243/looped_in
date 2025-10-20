@@ -12,7 +12,7 @@ const RootLayout = lazy(() => import("./app/root/layout"));
 const Home = lazy(() => import("./app/root/pages/home"));
 const Messaging = lazy(() => import("./app/root/pages/messaging"));
 const Jobs = lazy(() => import("./app/root/pages/jobs"));
-const Networks = lazy(() => import("./app/root/pages/networks"));
+const People = lazy(() => import("./app/root/pages/people"));
 const Notifications = lazy(() => import("./app/root/pages/notifications"));
 const CreatePost = lazy(() => import("./app/root/pages/create-post"));
 const Profile = lazy(() => import("./app/root/pages/profile"));
@@ -24,6 +24,8 @@ const AuthLayout = lazy(() => import("./app/auth/layout"));
 const SignIn = lazy(() => import("./app/auth/pages/sign-in"));
 const SignUp = lazy(() => import("./app/auth/pages/sign-up"));
 const ResetPassword = lazy(() => import("./app/auth/pages/reset-password"));
+
+const NotFound = lazy(() => import("./app/custom/pages/not-found"));
 
 function App() {
   const { setUser, user } = useAuthStore();
@@ -63,7 +65,7 @@ function App() {
         <Route element={user ? <RootLayout /> : <Navigate to={"/sign-in"} />}>
           <Route index element={<Home />} />
           <Route path="/jobs" element={<Jobs />} />
-          <Route path="/network" element={<Networks />} />
+          <Route path="/people" element={<People />} />
           <Route path="/messaging" element={<Messaging />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/create" element={<CreatePost />} />
@@ -73,6 +75,7 @@ function App() {
           path="/email-verification"
           element={user ? <EmailVerification /> : <Navigate to={"/sign-in"} />}
         />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Toaster />
     </Suspense>
